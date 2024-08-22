@@ -29,8 +29,38 @@ func main() {
 	} else {
 		fmt.Println("no errors!")
 	}
-
 	fmt.Printf("%v\n", i4)
+
+	i2 = -9
+	if i1 > 0 && i2 > 0 {
+		fmt.Println("all nums are positive")
+	} else if i1 > 0 {
+		fmt.Println("only i1 is positive")
+	} else if i2 > 0 {
+		fmt.Println("only i2 is positive")
+	} else {
+		fmt.Println("no positive nums")
+	}
+
+	switch {
+	case i1 > 0 && i2 > 0:
+		fmt.Println("all nums are positive")
+	case i1 > 0:
+		fmt.Println("only i1 is positive")
+	case i2 > 0:
+		fmt.Println("only i2 is positive")
+	default:
+		fmt.Println("no positive nums")
+	}
+
+	switch i1 {
+	case 0:
+		fmt.Println("i1 is 0")
+	case 1, 2:
+		fmt.Println("i1 is 1 or 2")
+	default:
+		fmt.Println("i1 isn't 0 or 1 or 2")
+	}
 }
 
 func getName() string {
