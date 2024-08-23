@@ -3,13 +3,21 @@ package main
 import "fmt"
 
 type gasEngine struct {
-	mpg     uint8
-	gallons uint8
+	mpg     uint
+	gallons uint
 }
 
-func (ge gasEngine) milesLeft() uint16 {
-	var v uint16 = uint16(ge.gallons) * uint16(ge.mpg)
-	return v
+func (g gasEngine) milesLeft() uint {
+	return g.gallons * g.mpg
+}
+
+type electricEngine struct {
+	mpkwh uint
+	kwh   uint
+}
+
+func (e electricEngine) milesLeft() uint {
+	return e.kwh * e.mpkwh
 }
 
 func milesLeft1(ge gasEngine) uint16 {
