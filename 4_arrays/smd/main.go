@@ -30,4 +30,11 @@ func main() {
 	intArr4 = append(intArr4, 77)
 	fmt.Printf("capacity after %v, len after %v\n", cap(intArr4), len(intArr4))
 	fmt.Println(intArr4)
+
+	//spread operator ...
+	var intSlice1 []int32 = []int32{3, 5, 6}
+	var intSlice2 []int32 = []int32{8, 9}
+	intSlice2 = append(intSlice2, intSlice1...)
+	fmt.Println(intSlice2)
+	fmt.Printf("capacity %v, len %v\n", cap(intSlice2), len(intSlice2))
 }
