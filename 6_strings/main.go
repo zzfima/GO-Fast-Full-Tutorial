@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func main() {
 	var myString = "résumé"
@@ -24,4 +27,24 @@ func main() {
 	}
 
 	fmt.Println("Is num of bytes and not a characters: ", len(myString))
+
+	//runes is unicode point number which represents characters
+	var myRune = []rune("résumé")
+	var someRune1 = myRune[1]
+	fmt.Printf("%v %T\n", someRune1, someRune1)
+	for i2, v2 := range myRune {
+		fmt.Println(i2, v2)
+	}
+
+	//strings are immutable
+	//myString[1] = "h"
+
+	//string builder
+	var strBld strings.Builder
+	var myString1 = "mama"
+	for i := range myString1 {
+		strBld.WriteByte(myString1[i])
+	}
+	fmt.Println("Rune format: ", strBld)
+	fmt.Println("String format: ", strBld.String())
 }
