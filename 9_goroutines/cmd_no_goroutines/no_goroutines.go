@@ -1,4 +1,4 @@
-package noGoroutines
+package no_goroutines
 
 import (
 	"fmt"
@@ -9,6 +9,7 @@ import (
 var dbData []string = []string{"id1", "id2", "id3", "id4", "id5", "id6"}
 
 func DoNoGoroutines() {
+	fmt.Println("***DoNoGoroutines***")
 	t0 := time.Now()
 	for i := 0; i < 5; i++ {
 		dbCall(i)
