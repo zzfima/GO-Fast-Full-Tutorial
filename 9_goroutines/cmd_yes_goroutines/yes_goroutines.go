@@ -9,7 +9,7 @@ import (
 var dbData []string = []string{"id1", "id2", "id3", "id4", "id5", "id6"}
 var res = []string{}
 var wg = sync.WaitGroup{}
-var m = sync.Mutex{}
+var m = sync.RWMutex{}
 
 func DoYesGoroutines() {
 	fmt.Println("***YesNoGoroutines***")
@@ -33,6 +33,11 @@ func dbCall(i int) {
 	m.Lock()
 	res = append(res, dbData[i])
 	m.Unlock()
+
+	//will locked when Lock
+	m.RLock()
+	fmt.Println(res)
+	m.RUnlock()
 
 	wg.Done()
 }
