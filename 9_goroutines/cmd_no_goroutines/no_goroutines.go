@@ -18,7 +18,7 @@ func DoNoGoroutines() {
 }
 
 func dbCall(i int) {
-	var delay float32 = rand.Float32() * 2000
+	var delay float32 = rand.Float32() * 200
 	duration := time.Duration(delay) * time.Millisecond
 	fmt.Println("DB read time is ", duration)
 	time.Sleep(duration)

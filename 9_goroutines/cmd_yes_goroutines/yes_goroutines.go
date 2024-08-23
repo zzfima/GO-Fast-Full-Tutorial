@@ -2,13 +2,14 @@ package yes_goroutines
 
 import (
 	"fmt"
-	"math/rand/v2"
 	"sync"
 	"time"
 )
 
 var dbData []string = []string{"id1", "id2", "id3", "id4", "id5", "id6"}
+var res = []string{}
 var wg = sync.WaitGroup{}
+var m = sync.Mutex{}
 
 func DoYesGoroutines() {
 	fmt.Println("***YesNoGoroutines***")
@@ -19,13 +20,19 @@ func DoYesGoroutines() {
 	}
 	wg.Wait()
 	fmt.Println("time passed ", time.Since(t0))
+	fmt.Println(res)
 }
 
 func dbCall(i int) {
-	var delay float32 = rand.Float32() * 2000
+	var delay float32 = 1000
 	duration := time.Duration(delay) * time.Millisecond
 	fmt.Println("DB read time is ", duration)
 	time.Sleep(duration)
 	fmt.Println("DB read is ", dbData[i])
+
+	m.Lock()
+	res = append(res, dbData[i])
+	m.Unlock()
+
 	wg.Done()
 }
