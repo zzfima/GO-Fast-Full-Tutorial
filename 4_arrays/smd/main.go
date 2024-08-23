@@ -37,4 +37,10 @@ func main() {
 	intSlice2 = append(intSlice2, intSlice1...)
 	fmt.Println(intSlice2)
 	fmt.Printf("capacity %v, len %v\n", cap(intSlice2), len(intSlice2))
+
+	//create array using make
+	var intSlice3 []int32 = make([]int32, 3)
+	fmt.Printf("capacity %v, len %v\n", cap(intSlice3), len(intSlice3))
+	var intSlice4 []int32 = make([]int32, 3, 7)
+	fmt.Printf("capacity %v, len %v\n", cap(intSlice4), len(intSlice4))
 }
