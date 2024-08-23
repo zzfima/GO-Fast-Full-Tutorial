@@ -33,4 +33,29 @@ func main() {
 	for i1, v1 := range myArr1 {
 		fmt.Println(i1, v1)
 	}
+
+	//for loop 1
+	fmt.Println("****")
+	var i2 int = 0
+	for i2 < 5 {
+		fmt.Println(i2)
+		i2++
+	}
+
+	//for loop 2
+	fmt.Println("****")
+	for i4 := 0; i4 < 5; i4++ {
+		fmt.Println(i4)
+	}
+
+	//while loop
+	fmt.Println("****")
+	var i3 int = 0
+	for {
+		if i3 > 5 {
+			break
+		}
+		fmt.Println(i3)
+		i3++
+	}
 }
