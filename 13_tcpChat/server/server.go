@@ -1,12 +1,12 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"log"
-	"net"
-	"strings"
-	"sync"
+	"bufio"   //Buffered I/O operations, used for reading user input and server messages
+	"fmt"     //Formatted I/O functions
+	"log"     //Logging errors
+	"net"     //Networking, specifically TCP connections
+	"strings" //String manipulation functions
+	"sync"    //Synchronization primitives
 )
 
 type Client struct {
