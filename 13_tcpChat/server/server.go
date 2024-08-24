@@ -33,7 +33,8 @@ func createNewServer() *Server {
 	}
 }
 
-func (server *Server) acceptListeners() {
+// accept listeners
+func (server *Server) start() {
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatalf("Failed to start server: %v", err)
@@ -54,6 +55,7 @@ func (server *Server) acceptListeners() {
 	}
 }
 
+// manages a new client, message to channel, leave to channel
 func (server *Server) handleConnection(conn net.Conn) {
 	defer conn.Close()
 
@@ -76,6 +78,7 @@ func (server *Server) handleConnection(conn net.Conn) {
 	server.ChannelLeavingClients <- client
 }
 
+// continuously listens for events: oin, Leave and Messages
 func (server *Server) handleEvents() {
 	for {
 		select {
@@ -97,6 +100,7 @@ func (server *Server) handleEvents() {
 	}
 }
 
+// sends a message to all clients except the sender
 func (server *Server) broadcast(message string, sender Client) {
 	log.Println(message)
 	server.Mutex.Lock()
@@ -111,5 +115,5 @@ func (server *Server) broadcast(message string, sender Client) {
 
 func main() {
 	server := createNewServer()
-	server.acceptListeners()
+	server.start()
 }
