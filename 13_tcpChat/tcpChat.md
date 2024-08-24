@@ -1,3 +1,13 @@
+## CMD
+
+Start the server:
+go run server.go
+
+Start a client:
+go run client.go --username=Bob --server=localhost:8080
+
+## Docker
+
 Build the server image:
 cd server
 docker build -t go-chat-server -f dockerfile.server .
@@ -14,4 +24,3 @@ docker run -d --name chat-server --network chat-network -p 8080:8080 go-chat-ser
 
 Run the client container (example for Bob):
 docker run -it --rm --network chat-network go-chat-client --username=Bob --server=chat-server:8080
-
