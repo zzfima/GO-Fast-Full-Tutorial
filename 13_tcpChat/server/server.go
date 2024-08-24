@@ -33,7 +33,7 @@ func createNewServer() *Server {
 	}
 }
 
-func (server *Server) start() {
+func (server *Server) acceptListeners() {
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatalf("Failed to start server: %v", err)
@@ -111,5 +111,5 @@ func (server *Server) broadcast(message string, sender Client) {
 
 func main() {
 	server := createNewServer()
-	server.start()
+	server.acceptListeners()
 }
