@@ -1,3 +1,8 @@
+Concurrent TCP chat application in Go. 
+This application consists of one server and multiple clients. 
+Clients join the chat server with a username. 
+The server manages clients, handles incoming messages, and broadcasts to all connected clients.
+
 ## CMD
 
 Start the server:
