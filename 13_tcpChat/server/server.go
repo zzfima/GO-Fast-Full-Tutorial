@@ -24,6 +24,13 @@ type Server struct {
 	ChannelLeavingClients  chan Client       // channel for handling clients leaving the chat
 }
 
+type ServerChat interface {
+	Start()                                  // Start the server
+	HandleConnection(conn net.Conn)          // Handle a new client connection
+	HandleEvents()                           // Handle server events (join, leave, message)
+	Broadcast(message string, sender Client) // Broadcast a message to all clients
+}
+
 func createNewServer() *Server {
 	return &Server{
 		Clients:                make(map[string]Client),
@@ -34,14 +41,14 @@ func createNewServer() *Server {
 }
 
 // accept listeners
-func (server *Server) start() {
+func (server *Server) Start() {
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 	defer listener.Close()
 
-	go server.handleEvents()
+	go server.HandleEvents()
 
 	log.Println("Server started on :8080")
 
@@ -51,12 +58,12 @@ func (server *Server) start() {
 			log.Printf("Failed to accept connection: %v", err)
 			continue
 		}
-		go server.handleConnection(conn)
+		go server.HandleConnection(conn)
 	}
 }
 
 // manages a new client, message to channel, leave to channel
-func (server *Server) handleConnection(conn net.Conn) {
+func (server *Server) HandleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	reader := bufio.NewReader(conn)
@@ -79,29 +86,29 @@ func (server *Server) handleConnection(conn net.Conn) {
 }
 
 // continuously listens for events: oin, Leave and Messages
-func (server *Server) handleEvents() {
+func (server *Server) HandleEvents() {
 	for {
 		select {
 		case client := <-server.ChannelJoiningClients:
 			server.Mutex.Lock()
 			server.Clients[client.Username] = client
 			server.Mutex.Unlock()
-			server.broadcast(fmt.Sprintf("%s joined the chat", client.Username), client)
+			server.Broadcast(fmt.Sprintf("%s joined the chat", client.Username), client)
 
 		case client := <-server.ChannelLeavingClients:
 			server.Mutex.Lock()
 			delete(server.Clients, client.Username)
 			server.Mutex.Unlock()
-			server.broadcast(fmt.Sprintf("%s left the chat", client.Username), client)
+			server.Broadcast(fmt.Sprintf("%s left the chat", client.Username), client)
 
 		case message := <-server.ChannelClientsMessages:
-			server.broadcast(message, Client{})
+			server.Broadcast(message, Client{})
 		}
 	}
 }
 
 // sends a message to all clients except the sender
-func (server *Server) broadcast(message string, sender Client) {
+func (server *Server) Broadcast(message string, sender Client) {
 	log.Println(message)
 	server.Mutex.Lock()
 	defer server.Mutex.Unlock()
@@ -114,6 +121,6 @@ func (server *Server) broadcast(message string, sender Client) {
 }
 
 func main() {
-	server := createNewServer()
-	server.start()
+	var server ServerChat = createNewServer()
+	server.Start()
 }
