@@ -24,7 +24,7 @@ func main() {
 
 	go readMessages()
 
-	sendMessage()
+	sendMessages()
 }
 
 func printMessageToUser(username *string) {
@@ -33,7 +33,7 @@ func printMessageToUser(username *string) {
 	log.Println("*** Enjoy chat, ", *username, " ;-)")
 }
 
-func sendMessage() {
+func sendMessages() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		text := scanner.Text()
