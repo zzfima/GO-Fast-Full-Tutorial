@@ -11,11 +11,12 @@ import (
 )
 
 var serverConnection net.Conn
+var serverAddress, userName *string
 
 func main() {
-	userName, serverAddress := parseCmdArgs()
+	readUserNameAndServerAddress()
 
-	connectToServer(serverAddress)
+	connectToServer()
 	defer serverConnection.Close()
 	fmt.Fprintf(serverConnection, "%s\n", *userName)
 
@@ -47,19 +48,18 @@ func sendMessage() {
 	}
 }
 
-func connectToServer(serverAddr *string) {
+func connectToServer() {
 	var err error
-	serverConnection, err = net.Dial("tcp", *serverAddr)
+	serverConnection, err = net.Dial("tcp", *serverAddress)
 	if err != nil {
 		log.Fatalf("Failed to connect to server: %v", err)
 	}
 }
 
-func parseCmdArgs() (*string, *string) {
-	username := flag.String("username", "Anonymous", "Username for the chat")
-	serverAddr := flag.String("server", "localhost:8080", "Server address")
+func readUserNameAndServerAddress() {
+	userName = flag.String("username", "Anonymous", "Username for the chat")
+	serverAddress = flag.String("server", "localhost:8080", "Server address")
 	flag.Parse()
-	return username, serverAddr
 }
 
 func readMessages() {
