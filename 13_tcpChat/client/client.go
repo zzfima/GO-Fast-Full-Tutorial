@@ -13,13 +13,13 @@ import (
 var serverConnection net.Conn
 
 func main() {
-	username, serverAddr := parseCmdArgs()
+	userName, serverAddress := parseCmdArgs()
 
-	connectToServer(serverAddr)
+	connectToServer(serverAddress)
 	defer serverConnection.Close()
-	fmt.Fprintf(serverConnection, "%s\n", *username)
+	fmt.Fprintf(serverConnection, "%s\n", *userName)
 
-	printMessageToUser(username)
+	printMessageToUser(userName)
 
 	go readMessages()
 
