@@ -9,36 +9,38 @@ import (
 	"sync"    //Synchronization primitives
 )
 
+// holds information about each connected client
 type Client struct {
-	Conn     net.Conn
-	Username string
+	Connection net.Conn
+	Username   string
 }
 
+// manages the overall state of the chat server
 type Server struct {
-	Clients  map[string]Client
-	Mutex    sync.Mutex
-	Messages chan string
-	Join     chan Client
-	Leave    chan Client
+	Clients                map[string]Client // connected clients, keyed by  userName
+	Mutex                  sync.Mutex        // safe concurrent access to the Clients map
+	ChannelClientsMessages chan string       // channel for broadcasting messages received from clients
+	ChannelJoiningClients  chan Client       // channel for handling new clients joining the chat
+	ChannelLeavingClients  chan Client       // channel for handling clients leaving the chat
 }
 
-func NewServer() *Server {
+func createNewServer() *Server {
 	return &Server{
-		Clients:  make(map[string]Client),
-		Messages: make(chan string),
-		Join:     make(chan Client),
-		Leave:    make(chan Client),
+		Clients:                make(map[string]Client),
+		ChannelClientsMessages: make(chan string),
+		ChannelJoiningClients:  make(chan Client),
+		ChannelLeavingClients:  make(chan Client),
 	}
 }
 
-func (s *Server) Start() {
+func (server *Server) start() {
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 	defer listener.Close()
 
-	go s.handleEvents()
+	go server.handleEvents()
 
 	log.Println("Server started on :8080")
 
@@ -48,11 +50,11 @@ func (s *Server) Start() {
 			log.Printf("Failed to accept connection: %v", err)
 			continue
 		}
-		go s.handleConnection(conn)
+		go server.handleConnection(conn)
 	}
 }
 
-func (s *Server) handleConnection(conn net.Conn) {
+func (server *Server) handleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	reader := bufio.NewReader(conn)
@@ -60,54 +62,54 @@ func (s *Server) handleConnection(conn net.Conn) {
 	username, _ := reader.ReadString('\n')
 	username = strings.TrimSpace(username)
 
-	client := Client{Conn: conn, Username: username}
-	s.Join <- client
+	client := Client{Connection: conn, Username: username}
+	server.ChannelJoiningClients <- client
 
 	for {
 		message, err := reader.ReadString('\n')
 		if err != nil {
 			break
 		}
-		s.Messages <- fmt.Sprintf("%s: %s", username, strings.TrimSpace(message))
+		server.ChannelClientsMessages <- fmt.Sprintf("%s: %s", username, strings.TrimSpace(message))
 	}
 
-	s.Leave <- client
+	server.ChannelLeavingClients <- client
 }
 
-func (s *Server) handleEvents() {
+func (server *Server) handleEvents() {
 	for {
 		select {
-		case client := <-s.Join:
-			s.Mutex.Lock()
-			s.Clients[client.Username] = client
-			s.Mutex.Unlock()
-			s.broadcast(fmt.Sprintf("%s joined the chat", client.Username), client)
+		case client := <-server.ChannelJoiningClients:
+			server.Mutex.Lock()
+			server.Clients[client.Username] = client
+			server.Mutex.Unlock()
+			server.broadcast(fmt.Sprintf("%s joined the chat", client.Username), client)
 
-		case client := <-s.Leave:
-			s.Mutex.Lock()
-			delete(s.Clients, client.Username)
-			s.Mutex.Unlock()
-			s.broadcast(fmt.Sprintf("%s left the chat", client.Username), client)
+		case client := <-server.ChannelLeavingClients:
+			server.Mutex.Lock()
+			delete(server.Clients, client.Username)
+			server.Mutex.Unlock()
+			server.broadcast(fmt.Sprintf("%s left the chat", client.Username), client)
 
-		case message := <-s.Messages:
-			s.broadcast(message, Client{})
+		case message := <-server.ChannelClientsMessages:
+			server.broadcast(message, Client{})
 		}
 	}
 }
 
-func (s *Server) broadcast(message string, sender Client) {
+func (server *Server) broadcast(message string, sender Client) {
 	log.Println(message)
-	s.Mutex.Lock()
-	defer s.Mutex.Unlock()
+	server.Mutex.Lock()
+	defer server.Mutex.Unlock()
 
-	for _, client := range s.Clients {
+	for _, client := range server.Clients {
 		if client != sender {
-			fmt.Fprintln(client.Conn, message)
+			fmt.Fprintln(client.Connection, message)
 		}
 	}
 }
 
 func main() {
-	server := NewServer()
-	server.Start()
+	server := createNewServer()
+	server.start()
 }
