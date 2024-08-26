@@ -21,7 +21,7 @@ func generator() {
 	}
 }
 
-// Generator: function that lunch a goroutine and returns a channel
+// Generator pattern: function that lunch a goroutine and returns a channel
 func boring(str string) <-chan string { //returns receive-only channel of strings
 	c := make(chan string)
 
