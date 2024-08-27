@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 )
 
@@ -22,15 +23,13 @@ func generator() {
 }
 
 // Generator pattern: function that lunch a goroutine and returns a channel
-func boring(str string) <-chan string { //returns receive-only channel of strings
+func boring(msg string) <-chan string { // Returns receive-only channel of strings.
 	c := make(chan string)
-
-	go func() {
-		for i := 0; i < 5; i++ {
-			time.Sleep(time.Second)
-			c <- str + " " + fmt.Sprintf("%d", i)
+	go func() { // We launch the goroutine from inside the function.
+		for i := 0; ; i++ {
+			c <- fmt.Sprintf("%s %d", msg, i)
+			time.Sleep(time.Duration(rand.Intn(1e3)) * time.Millisecond)
 		}
 	}()
-
-	return c
+	return c // Return the channel to the caller.
 }
